@@ -25,11 +25,31 @@ app.get('/', (req, res) => {
 });
 
 // time_table 테이블 데이터를 루트 경로에 출력
-app.get('/time-table', (req, res) => {
+app.get('/timetable', (req, res) => {
    connection.query('SELECT * FROM time_table', (err, results, fields) => {
      if (err) {
        console.error('쿼리 실행 오류: ', err);
        res.status(500).send('서버 내부 오류 발생');
+       return;
+     }
+     res.json(results);
+   });
+ });
+
+ //검색기능
+ app.get('/search', (req, res) => {
+   const condition = req.query.condition;
+
+   // 입력된 조건에 따라 SQL 쿼리 생성
+   let query = 'SELECT * FROM time_table WHERE 학점=';
+   
+   query += condition;
+ 
+   // MySQL에서 데이터 조회
+   connection.query(query, (err, results) => {
+     if (err) {
+       console.error('Error executing query: ', err);
+       res.status(500).json({ error: 'Internal Server Error' });
        return;
      }
      res.json(results);

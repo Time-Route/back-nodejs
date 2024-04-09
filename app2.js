@@ -1,15 +1,18 @@
+require('dotenv').config();
+
 const express = require('express');
-const {Sequelize, DataTypes}=require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 
 // Sequelize 인스턴스 생성
-const sequelize = new Sequelize('capstone', 'root', '1234', {
+const sequelize = new Sequelize('timeroute', 'root', process.env.DB_PASSWORD, {
    host: 'localhost',
    dialect: 'mysql'
 });
 
-const TimeTable = sequelize.define('capstone.time_table',{
+const TimeTable = sequelize.define('timetables', {
    No: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      primaryKey: true
    },
    비고: {
       type: DataTypes.TEXT
@@ -104,19 +107,21 @@ const TimeTable = sequelize.define('capstone.time_table',{
    실습: {
       type: DataTypes.INTEGER
    }
+}, {
+   timestamps: false
 });
 
 TimeTable.findAll()
-   .then(rows=>{
-      rows.forEach(row=>{
+   .then(rows => {
+      rows.forEach(row => {
          console.log(row.toJSON());
       });
    })
-   .catch(err=>{
+   .catch(err => {
       console.error('데이터 조회 중 오류 발생:', err);
    });
 
-const app=express();
+const app = express();
 
 app.get('/', (req, res) => {
    res.send("Hello time_route web!");
@@ -125,22 +130,22 @@ app.get('/', (req, res) => {
 // TimeTable squelize 인스턴스 보기
 app.get('/timetable', async (req, res) => {
    try {
-     // TimeTable 모델을 사용하여 time_table 데이터를 조회합니다.
-     const timetableData = await time_table.findAll();
-     // 데이터를 JSON 형식으로 응답합니다.
-     res.json(timetableData);
+      // TimeTable 모델을 사용하여 time_table 데이터를 조회합니다.
+      const timetableData = await time_table.findAll();
+      // 데이터를 JSON 형식으로 응답합니다.
+      res.json(timetableData);
    } catch (error) {
-     console.error('Error:', error);
-     res.status(500).send('An error occurred while fetching timetable data.');
+      console.error('Error:', error);
+      res.status(500).send('An error occurred while fetching timetable data.');
    }
- });
+});
 
-app.get('/timetable/filter', (req,res)=>{
+app.get('/timetable/filter', (req, res) => {
    res.send("filter function page");
 });
 
- //서버시작
- const PORT=3000;
- app.listen(PORT, ()=>{
+//서버시작
+const PORT = 3000;
+app.listen(PORT, () => {
    console.log('서버가 http://localhost:3000 에서 실행 중입니다.')
- })
+})

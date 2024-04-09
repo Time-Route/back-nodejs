@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize, DataTypes, Op } = require('sequelize');
 
 // Sequelize 인스턴스 생성
 const sequelize = new Sequelize('timeroute', 'root', process.env.DB_PASSWORD, {
@@ -111,15 +111,7 @@ const TimeTable = sequelize.define('timetables', {
    timestamps: false
 });
 
-TimeTable.findAll()
-   .then(rows => {
-      rows.forEach(row => {
-         console.log(row.toJSON());
-      });
-   })
-   .catch(err => {
-      console.error('데이터 조회 중 오류 발생:', err);
-   });
+
 
 const app = express();
 
@@ -131,7 +123,7 @@ app.get('/', (req, res) => {
 app.get('/timetable', async (req, res) => {
    try {
       // TimeTable 모델을 사용하여 time_table 데이터를 조회합니다.
-      const timetableData = await time_table.findAll();
+      const timetableData = await TimeTable.findAll();
       // 데이터를 JSON 형식으로 응답합니다.
       res.json(timetableData);
    } catch (error) {
@@ -140,8 +132,52 @@ app.get('/timetable', async (req, res) => {
    }
 });
 
-app.get('/timetable/filter', (req, res) => {
-   res.send("filter function page");
+app.get('/timetable/filter', async (req, res) => {
+   try {
+      //검색 조건들 추후에 추가하기
+      const {code, course, completion, credits, day, time} = req.query;
+      
+      //검색조건들 한번에 저장
+      const searchCriteria = {};
+
+      //검색 조건들에 맞게 조건문 추가하기 (int는 대입 / text는 ``사용)
+      if(code) {
+         searchCriteria.교과목코드=code;
+      }
+      if(course) {
+         searchCriteria.교과목명={
+            [Op.like]: `%${course}%`
+         };
+      }
+      if(completion) {
+         searchCriteria.이수구분={
+            [Op.like]: `%${completion}%`
+         };
+      }
+      if(credits) {
+         searchCriteria.학점=credits;
+      }
+      if(day) {
+         searchCriteria.주야={
+            [Op.like]: `%${day}%`
+         };
+      }
+      if(time) {
+         searchCriteria.강의시간={
+            [Op.like]: `%${time}%`
+         };
+      }
+
+      const filter = await TimeTable.findAll({
+         where: searchCriteria
+      });
+
+      res.json(filter);
+   }
+   catch(error) {
+      console.error('Error executing query:', error);
+      res.status(500).send('Error executing query');
+   }
 });
 
 //서버시작

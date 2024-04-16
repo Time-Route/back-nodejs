@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
 const { Sequelize, DataTypes, Op } = require('sequelize');
 
 // Sequelize 인스턴스 생성
@@ -115,6 +116,10 @@ const TimeTable = sequelize.define('timetables', {
 
 const app = express();
 
+app.use(cors(
+   origin = '*'
+));
+
 app.get('/', (req, res) => {
    res.send("Hello time_route web!");
 });
@@ -135,35 +140,35 @@ app.get('/timetable', async (req, res) => {
 app.get('/timetable/filter', async (req, res) => {
    try {
       //검색 조건들 추후에 추가하기
-      const {code, course, completion, credits, day, time} = req.query;
-      
+      const { code, course, completion, credits, day, time } = req.query;
+
       //검색조건들 한번에 저장
       const searchCriteria = {};
 
       //검색 조건들에 맞게 조건문 추가하기 (int는 대입 / text는 ``사용)
-      if(code) {
-         searchCriteria.교과목코드=code;
+      if (code) {
+         searchCriteria.교과목코드 = code;
       }
-      if(course) {
-         searchCriteria.교과목명={
+      if (course) {
+         searchCriteria.교과목명 = {
             [Op.like]: `%${course}%`
          };
       }
-      if(completion) {
-         searchCriteria.이수구분={
+      if (completion) {
+         searchCriteria.이수구분 = {
             [Op.like]: `%${completion}%`
          };
       }
-      if(credits) {
-         searchCriteria.학점=credits;
+      if (credits) {
+         searchCriteria.학점 = credits;
       }
-      if(day) {
-         searchCriteria.주야={
+      if (day) {
+         searchCriteria.주야 = {
             [Op.like]: `%${day}%`
          };
       }
-      if(time) {
-         searchCriteria.강의시간={
+      if (time) {
+         searchCriteria.강의시간 = {
             [Op.like]: `%${time}%`
          };
       }
@@ -174,7 +179,7 @@ app.get('/timetable/filter', async (req, res) => {
 
       res.json(filter);
    }
-   catch(error) {
+   catch (error) {
       console.error('Error executing query:', error);
       res.status(500).send('Error executing query');
    }

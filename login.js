@@ -35,7 +35,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(session({ secret: 'secret', resave: false, saveUninitialized: false, cookie: {secure: false, masAge:60000} })); //쿠키 설정
+app.use(session({ secret: 'secret', resave: false, saveUninitialized: false})); //쿠키 설정
 
 app.get('/', (req, res) => {
    res.send("Hello time_route login!");
@@ -88,6 +88,10 @@ app.get('/register', async (req, res) => {
 app.get('/login', async(req, res) => {
    const {userid, password} = req.query;
 
+   if(req.session.userId != null) {
+      return res.status(401).json( '로그인된 상태입니다.' );
+   }
+
    try {
       const user = await User.findOne({where: {userid}});
       //id확인
@@ -101,9 +105,6 @@ app.get('/login', async(req, res) => {
       }
 
       req.session.userId = user.id; //세션에 사용자 id 저장
-      
-      //클라이언트에 쿠키 설정; isLoggedIn (로그인 상태 확인 쿠키) ***만들어진거 확인 우째함???
-      res.cookie('isLoggedIn', true, {maxAge: 60000, httpOnly: true}); 
 
       res.json({message: 'Login successful', user});
    }

@@ -6,8 +6,11 @@ const session = require('express-session');
 const cors = require('cors');
 
 const sequelize = require('./config/database');
+
+// TODO : 모델 직접 추가
 const User = require('./models/user');
 const TimeTable = require('./models/timetable');
+const Schedule = require('./models/schedule');
 
 sequelize.sync({ force: false })
    .then(() => {
@@ -34,6 +37,7 @@ app.use(session({
 app.use('/api/timetable', require('./routes/timetable'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/user'));
+app.use('/api/schedule', require('./routes/schedule'));
 
 const PORT = 3000;
 app.listen(PORT, () => {

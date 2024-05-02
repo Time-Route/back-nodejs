@@ -100,7 +100,13 @@ const TimeTable = sequelize.define('timetables', {
         type: DataTypes.INTEGER
     }
 }, {
-    timestamps: false
+    timestamps: false,
+    indexes: [
+        {
+            unique: true,
+            fields: ['No']
+        }
+    ]
 });
 
 module.exports = TimeTable;

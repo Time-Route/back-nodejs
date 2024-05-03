@@ -6,13 +6,12 @@ const User = require('src/user/domain/user');
 const TimeTable = require('src/timetable/domain/timetable');
 const Schedule = require('src/schedule/domain/schedule');
 
-// 모델 관계 설정
-TimeTable.hasMany(Schedule, { foreignKey: 'time_table_id' });
-Schedule.belongsTo(TimeTable, { foreignKey: 'time_table_id' });
-
 // 데이터베이스 동기화
 sequelize.sync({ force: false })
    .then(() => {
+      // 모델 관계 설정
+      TimeTable.hasMany(Schedule, { foreignKey: 'time_table_id' });
+      Schedule.belongsTo(TimeTable, { foreignKey: 'time_table_id' });
       console.log('데이터베이스 연결 성공.');
    })
    .catch((err) => {

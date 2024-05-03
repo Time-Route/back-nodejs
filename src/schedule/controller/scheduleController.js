@@ -1,6 +1,8 @@
 const TimeTable = require('src/timetable/domain/timetable');
 const Schedule = require('src/schedule/domain/schedule');
 
+
+
 module.exports.updateSchedule = async () => {
     try {
         await Schedule.destroy({
@@ -12,7 +14,7 @@ module.exports.updateSchedule = async () => {
 
         for (const row of rows) {
             if (row.강의시간 === null) continue;
-            const schedules = parse(row.강의시간);
+            const schedules = this.parse(row.강의시간);
             for (const schedule of schedules) {
                 await Schedule.create({
                     day: schedule.day,

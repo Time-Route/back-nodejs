@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-const Timetable = require('./timetable');
+const sequelize = require('src/global/config/database');
+const TimeTable = require('src/timetable/domain/timetable');
 
 const Schedule = sequelize.define('schedules', {
     id: {
@@ -11,7 +11,7 @@ const Schedule = sequelize.define('schedules', {
     time_table_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: Timetable,
+            model: TimeTable,
             key: 'No'
         }
     },
@@ -27,6 +27,8 @@ const Schedule = sequelize.define('schedules', {
         type: DataTypes.STRING,
         allowNull: false
     }
+}, {
+    timestamps: false
 });
 
 module.exports = Schedule;

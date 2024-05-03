@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user');
+const User = require('src/user/domain/user');
 const bcrypt = require('bcrypt');
 
 // 회원가입 라우트 (나중에 get, post 나누기)

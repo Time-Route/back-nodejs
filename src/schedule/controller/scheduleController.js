@@ -1,21 +1,19 @@
-const express = require('express');
-const router = express.Router();
+const TimeTable = require('src/timetable/domain/timetable');
+const Schedule = require('src/schedule/domain/schedule');
 
-const { Op } = require('sequelize');
-const TimeTable = require('../models/timetable');
-const Schedule = require('../models/schedule');
-
-router.get('/update', async (req, res) => {
+module.exports.updateSchedule = async () => {
     try {
+        await Schedule.destroy({
+            where: {},
+            truncate: true
+        });
+
         const rows = await TimeTable.findAll();
-        console.log('Fetched timetable data.', rows.length, 'rows found.')
 
         for (const row of rows) {
             if (row.강의시간 === null) continue;
-            console.log('Parsing schedules for', row.강의시간)
             const schedules = parse(row.강의시간);
             for (const schedule of schedules) {
-                console.log('Creating schedule:', schedule)
                 await Schedule.create({
                     day: schedule.day,
                     start: schedule.start,
@@ -24,17 +22,16 @@ router.get('/update', async (req, res) => {
                 });
             }
         }
-        console.log('Schedules updated.');
-        res.send('Schedules updated.');
+        return true;
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).send('An error occurred while fetching timetable data.');
+        return false;
     }
-});
+}
 
-function parse(input) {
+module.exports.parse = (input) => {
     let schedules = [];
-    let regExp = /([월화수목금토일])\((\d+[AB]?(?: ~ \d+[AB]?)?(?:, \d+[AB]?(?: ~ \d+[AB]?))*)\)/g;
+    let regExp = /([월화수목금토일])\((\d+[AB]?(?: ~ \d+[AB]?)?(?:, \d+[AB]?(?: ~ \d+[AB]?)?)*)\)/g;
 
     let matches = input.matchAll(regExp);
 
@@ -59,4 +56,3 @@ function parse(input) {
 
     return schedules;
 }
-module.exports = router;

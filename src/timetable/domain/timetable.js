@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const sequelize = require('src/global/config/database');
+const Schedule = require('src/schedule/domain/schedule');
 
 const TimeTable = sequelize.define('timetables', {
     No: {

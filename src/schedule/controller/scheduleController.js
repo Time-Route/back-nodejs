@@ -1,8 +1,6 @@
 const TimeTable = require('src/timetable/domain/timetable');
 const Schedule = require('src/schedule/domain/schedule');
 
-
-
 module.exports.updateSchedule = async () => {
     try {
         await Schedule.destroy({
@@ -24,10 +22,9 @@ module.exports.updateSchedule = async () => {
                 });
             }
         }
-        return true;
     } catch (error) {
         console.error('Error:', error);
-        return false;
+        throw new BusinessError('시간표 업데이트에 실패했습니다.');
     }
 }
 

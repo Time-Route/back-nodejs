@@ -47,6 +47,9 @@ app.use('/api/schedule', require('src/schedule/route/scheduleRouter'));
 
 // 에러 처리 미들웨어
 app.use((err, req, res, next) => {
+   if (err instanceof BusinessError) {
+      return res.status(err.code).send(err.message);
+   }
    console.error(err);
    res.status(500).send('내부 서버 오류');
 });
